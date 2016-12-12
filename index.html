@@ -1,0 +1,25 @@
+<html>
+<body>
+<span>Team Name: </span>
+<input id="name">
+<span>Rank (5 is best, 1 is lowest): </span>
+<input id="rank">
+<button onclick="addTeam();">Enter</button>
+<script>
+    var teams = [];
+function addTeam() {
+    var name = document.getElementById("name").value;
+    var rank = document.getElementById("rank").value;
+    var team = {name:name, rank:rank};
+    teams.push(team);
+    console.log(teams);
+    display();
+    console.log(teams);
+}
+
+function display() {
+    teams.sort(function(a, b){return b.rank-a.rank});
+}
+</script>
+</body>
+</html>
