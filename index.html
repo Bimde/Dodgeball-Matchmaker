@@ -1,6 +1,9 @@
 <html>
 <head>
     <style>
+        body {
+            text-align: center;
+        }
         .game {
             text-align: center;
             margin: auto;
@@ -14,6 +17,10 @@
             font-size: 1.5em;
             font-family: Georgia;
             overflow: auto;
+        }
+        .roundHeader {
+            font-size: 2em;
+            text-align: center;
         }
         p {
             padding: 10px;
@@ -36,9 +43,9 @@
         <div id="board"></div>
 
         <!-- Script -->
-        <script>
+        <script type="text/javascript">
             const noRounds = 2;
-            var teams = [{name:"a", rank:"1", points: 0},{name:"b", rank:"2", points: 0},{name:"c", rank:"3", points: 0},{name:"d", rank:"4", points: 0},{name:"e", rank:"5", points: 0} ];
+            var teams = [{name:"Sample Team A", rank:"1", points: 0},{name:"Very Long Annoying Name Sample Team B", rank:"2", points: 0},{name:"Sample Team C", rank:"3", points: 0},{name:"Sample Team D", rank:"4", points: 0},{name:"Sample Team E", rank:"5", points: 0} ];
             var games = [];
 
             function addTeam() {
@@ -53,26 +60,37 @@
 
             function calculate() {
                 empty();
-                for(var i = 1; i < noRounds; i++) {
-                    round(i);
+                for(var i = 1; i <= noRounds; i++) {
+                    round(i, (i % 2 == 0));
                 }
             }
 
-            function round(num) {
+            function round(num, change) {
+                var board = document.getElementById("board");
+                var text = document.createTextNode("Round " + num);
+                var header = document.createElement("h1");
+                header.setAttribute("class", "roundHeader")
+                header.appendChild(text);
+                board.appendChild(header);
+
+
                 teams.sort(function(a, b){return a.rank-b.rank});
                 var teamClone = teams.slice();
                 var noGames = teams.length/2;
+                var temp = change ? teamClone.pop() : null;
                 for(var i = 0; i < noGames; i++) {
                     var a = teamClone.pop();
                     var b = teamClone.pop();
                     if (!b) {
                         console.log("You get a free-pass");
-                        draw(a, null, true);
+                        draw((change?temp:a), null, true);
                     } else {
                         games.push({game: i, teams: [a, b]});
-                        draw(a, b, false);
+                        draw((change?temp:a), b, false);
                         console.log(games);
                     }
+                    if(change)
+                        temp = a;
                 }
             }
 
