@@ -1,25 +1,121 @@
 <html>
-<body>
-<span>Team Name: </span>
-<input id="name">
-<span>Rank (5 is best, 1 is lowest): </span>
-<input id="rank">
-<button onclick="addTeam();">Enter</button>
-<script>
-    var teams = [];
-function addTeam() {
-    var name = document.getElementById("name").value;
-    var rank = document.getElementById("rank").value;
-    var team = {name:name, rank:rank};
-    teams.push(team);
-    console.log(teams);
-    display();
-    console.log(teams);
-}
+<head>
+    <style>
+        .game {
+            text-align: center;
+            margin: auto;
+            display: inline-block;
+            border: solid grey 4px;
+            border-radius: 4px;
+            margin: 10px;
+            width: 15%;
+            height: 150px;
+            padding: 10px;
+            font-size: 1.5em;
+            font-family: Georgia;
+            overflow: auto;
+        }
+        p {
+            padding: 10px;
+            margin: 0px;
+        }
+        span {
+            margin-left: 10px;
+        }
+        input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+    <body>
+        <span>Team Name: </span>
+        <input id="name">
+        <span>Rank (5 is best, 1 is lowest): </span>
+        <input id="rank">
+        <button onclick="addTeam();">Add Team</button>
+        <div id="board"></div>
 
-function display() {
-    teams.sort(function(a, b){return b.rank-a.rank});
-}
-</script>
-</body>
+        <!-- Script -->
+        <script>
+            const noRounds = 2;
+            var teams = [{name:"a", rank:"1", points: 0},{name:"b", rank:"2", points: 0},{name:"c", rank:"3", points: 0},{name:"d", rank:"4", points: 0},{name:"e", rank:"5", points: 0} ];
+            var games = [];
+
+            function addTeam() {
+                var name = document.getElementById("name").value;
+                var rank = document.getElementById("rank").value;
+                var team = {name:name, rank:rank, points:0};
+                teams.push(team);
+                console.log(teams);
+                calculate();
+                console.log(teams);
+            }
+
+            function calculate() {
+                empty();
+                for(var i = 1; i < noRounds; i++) {
+                    round(i);
+                }
+            }
+
+            function round(num) {
+                teams.sort(function(a, b){return a.rank-b.rank});
+                var teamClone = teams.slice();
+                var noGames = teams.length/2;
+                for(var i = 0; i < noGames; i++) {
+                    var a = teamClone.pop();
+                    var b = teamClone.pop();
+                    if (!b) {
+                        console.log("You get a free-pass");
+                        draw(a, null, true);
+                    } else {
+                        games.push({game: i, teams: [a, b]});
+                        draw(a, b, false);
+                        console.log(games);
+                    }
+                }
+            }
+
+            function empty() {
+                var board = document.getElementById("board");
+                while(board.lastChild) {
+                    board.removeChild(board.lastChild);
+                }
+            }
+
+            function draw(a, b, freePass){
+                var board = document.getElementById("board");
+                var game = document.createElement("div");
+                game.setAttribute("class", "game")
+
+                var team1 = document.createElement("p");
+                var node1 = document.createTextNode(a.name);
+                team1.appendChild(node1);
+                game.appendChild(team1);
+
+                if(freePass) {
+                    var temp = document.createElement("p");
+                    var node = document.createTextNode("FREE PASS");
+                    temp.appendChild(node);
+                    game.appendChild(temp);
+
+                } else {
+                    var vs = document.createElement("p");
+                    var node = document.createTextNode("VS");
+                    vs.appendChild(node);
+
+                    var team2 = document.createElement("p");
+                    var node2 = document.createTextNode(b.name);
+                    team2.appendChild(node2);
+
+                    game.appendChild(vs);
+                    game.appendChild(team2);
+                }
+                
+                board.appendChild(game);
+            }
+
+            calculate();
+        </script>
+    </body>
 </html>
