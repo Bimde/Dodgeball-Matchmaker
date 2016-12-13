@@ -9,9 +9,28 @@
 	<input placeholder="Team ID" id="team2">
 	<button onclick="addGame();">Add Game</button>
 	<script type="text/javascript">
-		function addGame() {
-			
+		var games = [];
+		var teams = [];
+
+		function buildGameList() {
+			console.log(games);
+			console.log(teams);
 		}
+
+		function saveData() {
+                localStorage.setItem('teamList', JSON.stringify(teams));
+                localStorage.setItem('gameList', JSON.stringify(games));
+            }
+
+		function loadData() {
+			games = JSON.parse(localStorage.getItem('gameList'));
+			teams = JSON.parse(localStorage.getItem('teamList'));
+		}
+
+		(function start() {
+			loadData();
+			buildGameList();
+		})();
 	</script>
 </body>
 </html>

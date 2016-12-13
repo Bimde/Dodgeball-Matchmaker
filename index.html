@@ -41,12 +41,13 @@
         <input id="rank">
         <button onclick="addTeam();">Add Team</button>
         <div id="board"></div>
+        <button onclick="startTourney();">Start Tournament</button>
 
         <!-- Script -->
         <script type="text/javascript">
             const noRounds = 2;
             var teams = [{name:"Sample Team A", rank:"1", points: 0},{name:"Very Long Annoying Name Sample Team B", rank:"2", points: 0},{name:"Sample Team C", rank:"3", points: 0},{name:"Sample Team D", rank:"4", points: 0},{name:"Sample Team E", rank:"5", points: 0} ];
-            var games = [];
+            var games = [[]];
 
             function addTeam() {
                 var name = document.getElementById("name").value;
@@ -85,7 +86,7 @@
                         console.log("You get a free-pass");
                         draw((change?temp:a), null, true);
                     } else {
-                        games.push({game: i, teams: [a, b]});
+                        games[num].push({game: i, teams: [a, b]});
                         draw((change?temp:a), b, false);
                         console.log(games);
                     }
@@ -133,7 +134,31 @@
                 board.appendChild(game);
             }
 
-            calculate();
+            function saveData() {
+                localStorage.setItem('teamList', JSON.stringify(teams));
+                localStorage.setItem('gameList', JSON.stringify(games));
+            }
+
+            function startTourney() {
+                saveData();
+                window.location.href = "pointTracker.html";
+            }
+
+            function loadData() {
+                games = JSON.parse(localStorage.getItem('gameList'));
+                teams = JSON.parse(localStorage.getItem('teamList'));
+            }
+
+            function initialize() {
+                loadData();
+                if (!games) {
+                    games = [];
+                }
+                if (!teams) {
+                    teams = [];
+                }
+                calculate();
+            }
         </script>
     </body>
 </html>
