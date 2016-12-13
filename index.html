@@ -47,7 +47,7 @@
         <script type="text/javascript">
             const noRounds = 2;
             var teams = [{name:"Sample Team A", rank:"1", points: 0},{name:"Very Long Annoying Name Sample Team B", rank:"2", points: 0},{name:"Sample Team C", rank:"3", points: 0},{name:"Sample Team D", rank:"4", points: 0},{name:"Sample Team E", rank:"5", points: 0} ];
-            var games = [[]];
+            var games;
 
             function addTeam() {
                 var name = document.getElementById("name").value;
@@ -74,7 +74,6 @@
                 header.appendChild(text);
                 board.appendChild(header);
 
-
                 teams.sort(function(a, b){return a.rank-b.rank});
                 var teamClone = teams.slice();
                 var noGames = teams.length/2;
@@ -86,7 +85,9 @@
                         console.log("You get a free-pass");
                         draw((change?temp:a), null, true);
                     } else {
-                        games[num].push({game: i, teams: [a, b]});
+                        console.log(games);
+                        console.log(num-1);
+                        games[num-1].push({game: i, teams: [a, b]});
                         draw((change?temp:a), b, false);
                         console.log(games);
                     }
@@ -100,6 +101,7 @@
                 while(board.lastChild) {
                     board.removeChild(board.lastChild);
                 }
+
             }
 
             function draw(a, b, freePass){
@@ -136,6 +138,7 @@
 
             function saveData() {
                 localStorage.setItem('teamList', JSON.stringify(teams));
+                localStorage.setItem('gameList', null);
                 localStorage.setItem('gameList', JSON.stringify(games));
             }
 
@@ -149,16 +152,26 @@
                 teams = JSON.parse(localStorage.getItem('teamList'));
             }
 
-            function initialize() {
+            (function initialize() {
                 loadData();
+                console.log(games);
+                console.log(teams);
                 if (!games) {
                     games = [];
+                    for(var i = 0; i < noRounds; i++) {
+                        games[i] = [];
+                    }
                 }
                 if (!teams) {
                     teams = [];
+                    for(var i = 0; i < noRounds; i++) {
+                        teams[i] = [];
+                    }
                 }
+                console.log(games);
+                console.log(teams);
                 calculate();
-            }
+            })();
         </script>
     </body>
 </html>
