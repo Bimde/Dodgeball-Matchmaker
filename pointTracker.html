@@ -1,4 +1,35 @@
 <html>
+<head>
+	<style>
+		body {
+			text-align: center;
+			background-color: lightgrey;
+		}
+		#board {
+			text-align: center;
+			width: 90%;
+			display: inline-block;
+			margin:10px;
+			padding: 5px;
+		}
+		.game {
+			display: inline-block;
+			width: 25%;
+			padding: 2%;
+			background-color: white;
+			margin: 2%;
+			border: solid black 1px;
+		}
+		.team {
+			font-family: "Comic Sans MS", cursive, sans-serif;
+		}
+
+		.bye {
+			font-weight: bold;
+			font-size: 1.5em;
+		}
+	</style>
+</head>
 <body>
 	<input placeholder="Team ID" id="team1">
 	<select>
@@ -8,28 +39,146 @@
 	</select>
 	<input placeholder="Team ID" id="team2">
 	<button onclick="addGame();">Add Game</button>
+
+	<div id="board"></div>
 	<script type="text/javascript">
-		var games = [];
 		var teams = [];
+		var gamesPlayed;
+		var games;
+		var bye;
+		const NUM_ROUNDS = 2;
 
 		function buildGameList() {
-			console.log(games);
 			console.log(teams);
+
+			gamesPlayed = [];
+			bye = [];
+			games = [];
+
+			for(var i = 0; i<teams.length; i++) {
+				gamesPlayed[i] = [];
+				bye[i] = false;
+				teams[i].no = i;
+				for (var j = 0; j < teams.length; j++) {
+					gamesPlayed[i][j] = false;
+				}
+			}
+			console.log("teams:");
+			console.log(teams);
+			console.log("games:")
+			console.log(gamesPlayed);
+		}
+
+		function generateGames() {
+			games = [];
+			
+			for(var r = 0; r < NUM_ROUNDS; r++) {
+				newRound();
+				games[r] = [];
+				console.log("tlength: " + teams.length);
+				for(var i = 0; i < teams.length; i++) {
+					var flag = false;
+
+					console.log("r: " + r + " | i: " + i + " | Done: " + done[i]);
+					if(done[i])
+						continue;
+					console.log("r: " + r + " | i: " + i);
+					if(r % 2 == 1 && (teams.length / 2) % 2 != 0) {
+						console.log("in");
+						if(teams.length-i == 5 || teams.length-i == 4) {
+							flag = true;
+						}
+					}
+					for(var t = i + (flag?3:1); !done[i] && t < teams.length; t++) {
+						if(done[t] || gamesPlayed[i][t])
+							continue;
+						addGame(r, i, t);
+						done[i] = true;
+						done[t] = true;
+					}
+					if(!done[i]) {
+						addBye(r, i);
+					}
+				}		
+			}
+			console.log("games");
+			console.log(games);
+		}
+
+		function addBye(r, t) {
+			bye[t] = true;
+			done[t] = true;
+
+			games[r].push({a:t, b:-1});
+			console.log(games);
+		}
+
+		function newRound() {
+			done = [];
+			for(var i = 0; i< teams.length; i++) {
+				done[i] = false;
+			}
+		}
+
+		function addGame(r, a, b) {
+			gamesPlayed[a][b] = true;
+			gamesPlayed[b][a] = true;
+
+			games[r].push({a:a, b:b});
+			console.log(games);
+		}
+
+		function displayGames() {
+			var board = document.getElementById("board");
+			for(var r = 0; r < NUM_ROUNDS; r++) {
+				var header = document.createElement("h2");
+				var node = document.createTextNode("Round " + (r + 1));
+				header.appendChild(node);
+				board.appendChild(header);
+
+				for(var i = 0; i < games[r].length; i++) {
+					var div = document.createElement("div");
+					div.setAttribute("class", "game")
+
+					var team1 = document.createElement("div");
+					team1.setAttribute("class", "team");
+					var node1 = document.createTextNode(teams[games[r][i].a].name);
+					team1.appendChild(node1);
+
+					var team2 = document.createElement("div");
+					var node2;
+					if (games[r][i].b == -1) {
+						node2 = document.createTextNode("Bye")
+						team2.setAttribute("class", "team bye");
+					} else {
+						node2 = document.createTextNode(teams[games[r][i].b].name);					
+						team2.setAttribute("class", "team");
+					}
+					team2.appendChild(node2);
+
+					div.appendChild(team1);
+					div.appendChild(team2);
+
+					board.appendChild(div);
+				}
+			}
 		}
 
 		function saveData() {
-                localStorage.setItem('teamList', JSON.stringify(teams));
-                localStorage.setItem('gameList', JSON.stringify(games));
-            }
+            localStorage.setItem('teamList', JSON.stringify(teams));
+            localStorage.setItem('gameList', JSON.stringify(games));
+        }
 
 		function loadData() {
-			games = JSON.parse(localStorage.getItem('gameList'));
+			//games = JSON.parse(localStorage.getItem('gameList'));
 			teams = JSON.parse(localStorage.getItem('teamList'));
 		}
 
 		(function start() {
 			loadData();
 			buildGameList();
+			generateGames();
+			displayGames();
 		})();
 	</script>
 </body>

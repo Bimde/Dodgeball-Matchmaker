@@ -45,17 +45,17 @@
 
         <!-- Script -->
         <script type="text/javascript">
-            const noRounds = 2;
-            var teams = [{name:"Sample Team A", rank:"1", points: 0},{name:"Very Long Annoying Name Sample Team B", rank:"2", points: 0},{name:"Sample Team C", rank:"3", points: 0},{name:"Sample Team D", rank:"4", points: 0},{name:"Sample Team E", rank:"5", points: 0} ];
+            const noRounds = 8;
+            //var teams = [{name:"Sample Team A", rank:"1", points: 0},{name:"Very Long Annoying Name Sample Team B", rank:"2", points: 0},{name:"Sample Team C", rank:"3", points: 0},{name:"Sample Team D", rank:"4", points: 0},{name:"Sample Team E", rank:"5", points: 0} ];
+            var teams;
             var games;
 
             function addTeam() {
                 var name = document.getElementById("name").value;
                 var rank = document.getElementById("rank").value;
-                var team = {name:name, rank:rank, points:0};
-                teams.push(team);
-                console.log(teams);
-                calculate();
+                var team = {no: (teams?teams.length:0), name:name, rank:rank, points:0};
+                teams.push(team);                
+                teams.sort(function(a, b){return b.rank-a.rank});
                 console.log(teams);
             }
 
@@ -74,7 +74,7 @@
                 header.appendChild(text);
                 board.appendChild(header);
 
-                teams.sort(function(a, b){return a.rank-b.rank});
+                teams.sort(function(a, b){return b.rank-a.rank});
                 var teamClone = teams.slice();
                 var noGames = teams.length/2;
                 var temp = change ? teamClone.pop() : null;
@@ -138,8 +138,7 @@
 
             function saveData() {
                 localStorage.setItem('teamList', JSON.stringify(teams));
-                localStorage.setItem('gameList', null);
-                localStorage.setItem('gameList', JSON.stringify(games));
+                //localStorage.setItem('gameList', JSON.stringify(games));
             }
 
             function startTourney() {
@@ -148,29 +147,17 @@
             }
 
             function loadData() {
-                games = JSON.parse(localStorage.getItem('gameList'));
+                //games = JSON.parse(localStorage.getItem('gameList'));
                 teams = JSON.parse(localStorage.getItem('teamList'));
             }
 
             (function initialize() {
                 loadData();
-                console.log(games);
                 console.log(teams);
-                if (!games) {
-                    games = [];
-                    for(var i = 0; i < noRounds; i++) {
-                        games[i] = [];
-                    }
-                }
                 if (!teams) {
                     teams = [];
-                    for(var i = 0; i < noRounds; i++) {
-                        teams[i] = [];
-                    }
                 }
-                console.log(games);
                 console.log(teams);
-                calculate();
             })();
         </script>
     </body>
